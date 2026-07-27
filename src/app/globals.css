@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand (burgundy) scale */
+  --color-brand-50: #fbeaec;
+  --color-brand-100: #f3c8cd;
+  --color-brand-200: #e08c97;
+  --color-brand-300: #c95564;
+  --color-brand-400: #9c2d3b;
+  --color-brand-500: #7a1d28;
+  --color-brand-600: #5e1620;
+  --color-brand-700: #471115;
+  --color-brand-800: #350c0f;
+  --color-brand-900: #22070a;
+  --color-brand-950: #150405;
+
+  /* Gold scale */
+  --color-gold-50: #fdf9f1;
+  --color-gold-100: #faf1de;
+  --color-gold-200: #f3e2bd;
+  --color-gold-300: #e8d0a0;
+  --color-gold-400: #d8b574;
+  --color-gold-500: #c89a4f;
+  --color-gold-600: #a87b3e;
+  --color-gold-700: #7e5c30;
+  --color-gold-800: #553e22;
+  --color-gold-900: #322414;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e08c97;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9c2d3b;
+}
+
+/* Slim horizontal scroller used by the day picker */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #e08c97 transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+}
+
+/* Lightweight enter animation (replaces tailwindcss-animate) */
+@keyframes sr-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-in {
+  animation: sr-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Native date/time controls tinted to the brand */
+input[type="date"],
+input[type="time"] {
+  accent-color: #7a1d28;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-in,
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
