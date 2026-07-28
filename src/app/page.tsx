@@ -46,7 +46,6 @@ const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 export default function LandingPage() {
   const [lang, setLang] = useState<Language>("sq");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pastHero, setPastHero] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [pick, setPick] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -76,74 +75,73 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    let raf: number;
+    const THRESHOLD = 80;
+    let lastScrolled = false;
+
+    const apply = (active: boolean) => {
+      const header = headerRef.current;
+      const nav = navRef.current;
+      const sheen = sheenRef.current;
+      const logoWrap = logoWrapRef.current;
+      const logoImg = logoImgRef.current;
+      const title = titleRef.current;
+      const subtitle = subtitleRef.current;
+      if (!header || !nav) return;
+
+      const t = active ? 1 : 0;
+
+      header.style.top = t ? '12px' : '0px';
+
+      nav.style.height = t ? '56px' : (window.innerWidth >= 1024 ? '80px' : '64px');
+      nav.style.paddingLeft = t ? '12px' : '32px';
+      nav.style.paddingRight = t ? '12px' : '32px';
+      nav.style.maxWidth = t ? 'calc(100% - 24px)' : '1280px';
+      nav.style.borderRadius = t ? '9999px' : '0px';
+      nav.style.border = t ? '1px solid rgba(255,255,255,0.5)' : '1px solid rgba(255,255,255,0)';
+      nav.style.backgroundColor = t ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0)';
+      nav.style.boxShadow = t
+        ? '0 8px 32px -8px rgba(71,17,21,0.22), inset 0 1px 0 0 rgba(255,255,255,0.7)'
+        : '0 8px 32px -8px rgba(71,17,21,0), inset 0 1px 0 0 rgba(255,255,255,0)';
+      nav.style.backdropFilter = t ? 'blur(48px) saturate(150%)' : 'blur(0px) saturate(100%)';
+
+      if (sheen) sheen.style.opacity = String(t);
+
+      if (logoWrap) {
+        logoWrap.style.width = t ? '36px' : '44px';
+        logoWrap.style.height = t ? '36px' : '44px';
+        logoWrap.style.backgroundColor = t ? 'rgba(30,27,46,1)' : 'transparent';
+        logoWrap.style.boxShadow = t ? 'inset 0 0 0 1px rgba(234,179,8,0.4)' : 'none';
+      }
+      if (logoImg) {
+        logoImg.style.width = t ? '28px' : '44px';
+        logoImg.style.height = t ? '28px' : '44px';
+        logoImg.style.filter = t ? 'none' : 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))';
+      }
+      if (title) {
+        title.style.fontSize = t ? '12px' : '15px';
+        title.style.color = t ? '#1e293b' : 'white';
+      }
+      if (subtitle) {
+        subtitle.style.fontSize = t ? '7px' : '9px';
+        subtitle.style.color = t ? '#b45309' : 'rgba(234,179,8,0.85)';
+      }
+    };
+
+    apply(false);
+
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        const p = Math.min(1, Math.max(0, (y - 40) / 180));
-        const navH = window.innerWidth >= 1024 ? 80 : 64;
+      const y = window.scrollY;
+      const scrolled = y > THRESHOLD;
 
-        const header = headerRef.current;
-        const nav = navRef.current;
-        const sheen = sheenRef.current;
-        const logoWrap = logoWrapRef.current;
-        const logoImg = logoImgRef.current;
-        const title = titleRef.current;
-        const subtitle = subtitleRef.current;
-        if (!header || !nav) return;
-
-        header.style.top = `${p * 12}px`;
-        nav.style.height = `${navH - (navH - 56) * p}px`;
-        nav.style.paddingLeft = `${32 - 20 * p}px`;
-        nav.style.paddingRight = `${32 - 20 * p}px`;
-        nav.style.maxWidth = `${1280 - 200 * p}px`;
-        nav.style.borderRadius = `${p * 9999}px`;
-        nav.style.border = `1px solid rgba(255,255,255,${p * 0.5})`;
-        nav.style.backgroundColor = `rgba(255,255,255,${p * 0.65})`;
-        nav.style.boxShadow = `0 8px 32px -8px rgba(71,17,21,${p * 0.22}), inset 0 1px 0 0 rgba(255,255,255,${p * 0.7})`;
-        nav.style.backdropFilter = `blur(${p * 48}px) saturate(${100 + p * 50}%)`;
-
-        if (sheen) sheen.style.opacity = String(p);
-        if (logoWrap) {
-          const s = 44 - 8 * p;
-          logoWrap.style.width = `${s}px`;
-          logoWrap.style.height = `${s}px`;
-          if (p > 0.5) {
-            const t2 = (p - 0.5) * 2;
-            logoWrap.style.backgroundColor = `rgba(30,27,46,${t2})`;
-            logoWrap.style.boxShadow = `inset 0 0 0 1px rgba(234,179,8,${t2 * 0.4})`;
-          } else {
-            logoWrap.style.backgroundColor = 'transparent';
-            logoWrap.style.boxShadow = 'none';
-          }
-        }
-        if (logoImg) {
-          const s = 44 - 16 * p;
-          logoImg.style.width = `${s}px`;
-          logoImg.style.height = `${s}px`;
-          logoImg.style.filter = p < 0.3 ? `drop-shadow(0 2px 8px rgba(0,0,0,${0.35 * (1 - p / 0.3)}))` : 'none';
-        }
-        if (title) {
-          title.style.fontSize = `${15 - 3 * p}px`;
-          title.style.color = p > 0.5 ? '#1e293b' : 'white';
-        }
-        if (subtitle) {
-          subtitle.style.fontSize = `${9 - 2 * p}px`;
-          subtitle.style.color = p > 0.5 ? '#b45309' : 'rgba(234,179,8,0.85)';
-        }
-
-        setPastHero(y > window.innerHeight * 0.8);
-        const nowScrolled = y > 120;
-        setScrolled(prev => prev === nowScrolled ? prev : nowScrolled);
-      });
+      if (scrolled !== lastScrolled) {
+        lastScrolled = scrolled;
+        apply(scrolled);
+        setScrolled(scrolled);
+      }
     };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -216,12 +214,12 @@ export default function LandingPage() {
       {/* ═══════════ HEADER morphs into a floating glass pill ═══════════ */}
       <header
         ref={headerRef}
-        className="fixed z-50 left-0 right-0"
+        className="fixed z-50 left-0 right-0 transition-all duration-300 ease-out"
         style={{ top: 0 }}
       >
         <nav
           ref={navRef}
-          className="relative flex items-center justify-between gap-3 mx-auto"
+          className="relative flex items-center justify-between gap-3 mx-auto transition-all duration-300 ease-out"
           style={{
             height: 80,
             paddingLeft: 32,
@@ -249,7 +247,7 @@ export default function LandingPage() {
           >
             <span
               ref={logoWrapRef}
-              className="relative grid place-items-center rounded-full"
+              className="relative grid place-items-center rounded-full transition-all duration-300 ease-out"
               style={{
                 width: 44,
                 height: 44,
@@ -264,7 +262,7 @@ export default function LandingPage() {
                 width={44}
                 height={44}
                 priority
-                className="object-contain group-hover:scale-105 transition-transform"
+                className="object-contain group-hover:scale-105 transition-all duration-300 ease-out"
                 style={{
                   width: 44,
                   height: 44,
@@ -272,18 +270,18 @@ export default function LandingPage() {
                 }}
               />
             </span>
-            <span className="leading-tight text-left">
+            <span className="leading-tight text-left transition-all duration-300 ease-out">
               <span
                 ref={titleRef}
                 className="block font-bold tracking-[0.08em]"
-                style={{ fontSize: 15, color: 'white' }}
+                style={{ fontSize: 15, color: 'white', transition: 'all 0.3s ease-out' }}
               >
                 SPARTA ROYALE
               </span>
               <span
                 ref={subtitleRef}
                 className="block uppercase tracking-[0.22em] font-medium"
-                style={{ fontSize: 9, color: 'rgba(234,179,8,0.85)' }}
+                style={{ fontSize: 9, color: 'rgba(234,179,8,0.85)', transition: 'all 0.3s ease-out' }}
               >
                 Nail &amp; Beauty Studio
               </span>
@@ -839,26 +837,6 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* ═══════════ STICKY MOBILE BAR ═══════════ */}
-      <div className={`lg:hidden fixed inset-x-0 bottom-0 z-40 transition-all duration-300 ${pastHero && !menuOpen ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"}`}>
-        <div className="m-3 rounded-2xl border border-white/50 bg-white/80 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_12px_40px_-10px_rgba(71,17,21,0.35)] px-3 py-2.5 mb-[calc(0.75rem+env(safe-area-inset-bottom))] flex items-center gap-2.5">
-          <a
-            href={igDm}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-11 h-11 shrink-0 rounded-xl border border-brand-900/10 text-brand-700 grid place-items-center active:scale-95 transition-transform"
-            aria-label={`Instagram @${igHandle}`}
-          >
-            <Instagram className="w-[18px] h-[18px]" />
-          </a>
-          <button
-            onClick={() => goBooking()}
-            className="flex-1 h-11 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 text-white font-semibold text-sm shadow-lg shadow-brand-900/20 active:scale-[0.98] transition-transform inline-flex items-center justify-center gap-2"
-          >
-            <CalendarCheck className="w-4 h-4" />{t.nav_book}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
