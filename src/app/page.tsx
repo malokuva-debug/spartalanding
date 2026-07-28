@@ -147,12 +147,12 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-slate-900 antialiased selection:bg-brand-100 selection:text-brand-800">
       {/* ═══════════ HEADER morphs into a floating glass pill ═══════════ */}
       <header
-        className={`fixed z-50 left-0 right-0 transition-[top] duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+        className={`fixed z-50 left-0 right-0 transition-[top] duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
           scrolled ? "top-3" : "top-0"
         }`}
       >
         <nav
-          className={`relative flex items-center justify-between gap-3 transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+          className={`relative flex items-center justify-between gap-3 transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
             scrolled
               ? "h-14 px-3 sm:px-4 mx-auto max-w-[1080px] rounded-full border border-white/50 bg-white/65 shadow-[0_8px_32px_-8px_rgba(71,17,21,0.22),inset_0_1px_0_0_rgba(255,255,255,0.7)] backdrop-blur-2xl backdrop-saturate-150"
               : "h-16 lg:h-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto rounded-none border border-transparent bg-transparent"
@@ -160,7 +160,7 @@ export default function LandingPage() {
         >
           {/* gold sheen that only shows in pill state */}
           <span
-            className={`pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-gold-200/25 via-transparent to-brand-200/20 transition-opacity duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+            className={`pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-gold-200/25 via-transparent to-brand-200/20 transition-opacity duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
               scrolled ? "opacity-100" : "opacity-0"
             }`}
           />
@@ -172,7 +172,7 @@ export default function LandingPage() {
             aria-label="Sparta Royale"
           >
             <span
-              className={`relative grid place-items-center rounded-full transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+              className={`relative grid place-items-center rounded-full transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
                 scrolled
                   ? "w-9 h-9 bg-gradient-to-br from-brand-800 to-brand-950 ring-1 ring-gold-300/40 shadow-inner"
                   : "w-10 h-10 lg:w-11 lg:h-11 bg-transparent ring-0"
@@ -184,21 +184,21 @@ export default function LandingPage() {
                 width={44}
                 height={44}
                 priority
-                className={`object-contain transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] group-hover:scale-105 ${
+                className={`object-contain transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] group-hover:scale-105 ${
                   scrolled ? "w-7 h-7" : "w-10 h-10 lg:w-11 lg:h-11 drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
                 }`}
               />
             </span>
             <span className="leading-tight text-left">
               <span
-                className={`block font-bold tracking-[0.08em] transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+                className={`block font-bold tracking-[0.08em] transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
                   scrolled ? "text-[12px] text-brand-800" : "text-[13px] lg:text-[15px] text-white"
                 }`}
               >
                 SPARTA ROYALE
               </span>
               <span
-                className={`block uppercase tracking-[0.22em] font-medium transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+                className={`block uppercase tracking-[0.22em] font-medium transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
                   scrolled ? "text-[7px] text-gold-600" : "text-[8px] lg:text-[9px] text-gold-300/85"
                 }`}
               >
@@ -213,7 +213,7 @@ export default function LandingPage() {
               <li key={l.id}>
                 <button
                   onClick={() => goSection(l.id)}
-                  className={`px-3.5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+                  className={`px-3.5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
                     scrolled
                       ? "text-brand-900/65 hover:text-brand-800 hover:bg-brand-900/[0.06]"
                       : "text-white/80 hover:text-white hover:bg-white/10"
@@ -232,7 +232,7 @@ export default function LandingPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Instagram DM @${igHandle}`}
-              className={`grid place-items-center rounded-full transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] active:scale-95 ${
+              className={`grid place-items-center rounded-full transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] active:scale-95 ${
                 scrolled
                   ? "w-9 h-9 text-brand-700 hover:text-white hover:bg-gradient-to-br hover:from-brand-600 hover:to-brand-800 border border-brand-900/10"
                   : "w-9 h-9 text-white/85 hover:text-white hover:bg-white/15 border border-white/20"
@@ -243,7 +243,7 @@ export default function LandingPage() {
 
             <button
               onClick={() => setLang((l) => (l === "sq" ? "en" : "sq"))}
-              className={`text-[10px] font-bold uppercase tracking-wider px-2.5 h-9 rounded-full border transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] active:scale-95 ${
+              className={`text-[10px] font-bold uppercase tracking-wider px-2.5 h-9 rounded-full border transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] active:scale-95 ${
                 scrolled
                   ? "border-brand-900/10 text-brand-900/55 hover:text-brand-800 hover:bg-brand-900/[0.06]"
                   : "border-white/20 text-white/75 hover:text-white hover:bg-white/10"
@@ -254,7 +254,7 @@ export default function LandingPage() {
 
             <button
               onClick={() => goBooking()}
-              className={`hidden lg:inline-flex items-center gap-1.5 rounded-full font-semibold transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] active:scale-[0.97] ${
+              className={`hidden lg:inline-flex items-center gap-1.5 rounded-full font-semibold transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] active:scale-[0.97] ${
                 scrolled
                   ? "h-9 px-4 text-[12px] bg-gradient-to-r from-brand-700 to-brand-600 text-white shadow-md shadow-brand-900/20 hover:shadow-lg"
                   : "h-10 px-5 text-[13px] bg-gradient-to-r from-gold-300 to-gold-400 text-brand-900 shadow-lg shadow-black/20 hover:from-gold-200 hover:to-gold-300"
@@ -266,7 +266,7 @@ export default function LandingPage() {
 
             <button
               onClick={() => setMenuOpen((o) => !o)}
-              className={`lg:hidden grid place-items-center w-9 h-9 rounded-full transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] ${
+              className={`lg:hidden grid place-items-center w-9 h-9 rounded-full transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
                 scrolled ? "text-brand-800 hover:bg-brand-900/[0.06]" : "text-white hover:bg-white/10"
               }`}
               aria-label="Menu"
