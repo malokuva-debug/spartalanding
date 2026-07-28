@@ -4,7 +4,7 @@
   /* Brand (burgundy) scale */
   --color-brand-50: #fbeaec;
   --color-brand-100: #f3c8cd;
-  --color-brand-200: #e08c97;
+  --color-brand-200: #471115;
   --color-brand-300: #c95564;
   --color-brand-400: #9c2d3b;
   --color-brand-500: #7a1d28;
@@ -51,17 +51,17 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e08c97;
+  background: #471115;
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #9c2d3b;
+  background: #64191e;
 }
 
 /* Slim horizontal scroller used by the day picker */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: #e08c97 transparent;
+  scrollbar-color: #471115 transparent;
   -webkit-overflow-scrolling: touch;
 }
 .scrollbar-thin::-webkit-scrollbar {
