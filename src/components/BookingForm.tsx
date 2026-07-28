@@ -237,6 +237,7 @@ export default function BookingForm({ lang, salon, loading, preselect, onConsume
   const grouped = useMemo(() => {
     const g = { morning: [] as SlotInfo[], afternoon: [] as SlotInfo[], evening: [] as SlotInfo[] };
     slots.forEach((s) => {
+      if (!s.available) return;
       const h = Number(s.time.split(":")[0]);
       if (h < 12) g.morning.push(s);
       else if (h < 17) g.afternoon.push(s);
@@ -245,7 +246,7 @@ export default function BookingForm({ lang, salon, loading, preselect, onConsume
     return g;
   }, [slots]);
 
-  const noneFree = date && !slotsLoading && !dayClosed && !slots.some((s) => s.available);
+  const noneFree = date && !slotsLoading && !dayClosed && Object.values(grouped).every(list => list.length === 0);
   const todayIso = iso(new Date());
   const tomorrowIso = iso(new Date(Date.now() + 864e5));
 
@@ -579,7 +580,7 @@ export default function BookingForm({ lang, salon, loading, preselect, onConsume
               )}
               {([["morning", c.morning], ["afternoon", c.afternoon], ["evening", c.evening]] as const).map(([k, label]) => {
                 const list = grouped[k];
-                if (list.length === 0 || !list.some((s) => s.available)) return null;
+                if (list.length === 0) return null;
                 return (
                   <div key={k}>
                     <p className="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-semibold mb-2.5">{label}</p>
@@ -590,14 +591,11 @@ export default function BookingForm({ lang, salon, loading, preselect, onConsume
                           <button
                             key={s.time}
                             type="button"
-                            disabled={!s.available}
                             onClick={() => setTime(s.time)}
                             className={`h-12 rounded-xl text-xs font-semibold border tabular-nums transition-all active:scale-[0.96] ${
-                              !s.available
-                                ? "border-slate-100 bg-slate-50 text-slate-300 line-through cursor-not-allowed"
-                                : on
-                                  ? "border-brand-600 bg-brand-700 text-white shadow-md shadow-brand-700/20"
-                                  : "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50/50"
+                              on
+                                ? "border-brand-600 bg-brand-700 text-white shadow-md shadow-brand-700/20"
+                                : "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50/50"
                             }`}
                           >
                             {s.time}
