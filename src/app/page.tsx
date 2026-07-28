@@ -47,6 +47,7 @@ export default function LandingPage() {
   const [lang, setLang] = useState<Language>("sq");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [pastHero, setPastHero] = useState(false);
   const [pick, setPick] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -55,6 +56,11 @@ export default function LandingPage() {
   const bookingRef = useRef<HTMLDivElement>(null);
 
   const t = translations[lang];
+
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+  const p = scrollProgress;
+  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
+  const navBaseH = isDesktop ? 80 : 64;
 
   useEffect(() => {
     let alive = true;
@@ -70,8 +76,10 @@ export default function LandingPage() {
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 80);
-      setPastHero(window.scrollY > window.innerHeight * 0.8);
+      const y = window.scrollY;
+      setScrolled(y > 120);
+      setScrollProgress(Math.min(1, Math.max(0, (y - 20) / 160)));
+      setPastHero(y > window.innerHeight * 0.8);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -147,22 +155,27 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-slate-900 antialiased selection:bg-brand-100 selection:text-brand-800">
       {/* ═══════════ HEADER morphs into a floating glass pill ═══════════ */}
       <header
-        className={`fixed z-50 left-0 right-0 transition-[top] duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
-          scrolled ? "top-3" : "top-0"
-        }`}
+        className="fixed z-50 left-0 right-0"
+        style={{ top: lerp(0, 12, p) }}
       >
         <nav
-          className={`relative flex items-center justify-between gap-3 transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
-            scrolled
-              ? "h-14 px-3 sm:px-4 mx-auto max-w-[1080px] rounded-full border border-white/50 bg-white/65 shadow-[0_8px_32px_-8px_rgba(71,17,21,0.22),inset_0_1px_0_0_rgba(255,255,255,0.7)] backdrop-blur-2xl backdrop-saturate-150"
-              : "h-16 lg:h-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto rounded-none border border-transparent bg-transparent"
-          }`}
+          className="relative flex items-center justify-between gap-3 mx-auto"
+          style={{
+            height: lerp(navBaseH, 56, p),
+            paddingLeft: lerp(32, 12, p),
+            paddingRight: lerp(32, 12, p),
+            maxWidth: lerp(1280, 1080, p),
+            borderRadius: lerp(0, 9999, p),
+            border: `1px solid rgba(255,255,255,${lerp(0, 0.5, p)})`,
+            backgroundColor: `rgba(255,255,255,${lerp(0, 0.65, p)})`,
+            boxShadow: `0 8px 32px -8px rgba(71,17,21,${lerp(0, 0.22, p)}), inset 0 1px 0 0 rgba(255,255,255,${lerp(0, 0.7, p)})`,
+            backdropFilter: `blur(${lerp(0, 48, p)}px) saturate(${lerp(100, 150, p)}%)`,
+          }}
         >
           {/* gold sheen that only shows in pill state */}
           <span
-            className={`pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-gold-200/25 via-transparent to-brand-200/20 transition-opacity duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
-              scrolled ? "opacity-100" : "opacity-0"
-            }`}
+            className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-gold-200/25 via-transparent to-brand-200/20"
+            style={{ opacity: p }}
           />
 
           {/* Logo */}
@@ -172,11 +185,13 @@ export default function LandingPage() {
             aria-label="Sparta Royale"
           >
             <span
-              className={`relative grid place-items-center rounded-full transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
-                scrolled
-                  ? "w-9 h-9 bg-gradient-to-br from-brand-800 to-brand-950 ring-1 ring-gold-300/40 shadow-inner"
-                  : "w-10 h-10 lg:w-11 lg:h-11 bg-transparent ring-0"
-              }`}
+              className="relative grid place-items-center rounded-full"
+              style={{
+                width: lerp(44, 36, p),
+                height: lerp(44, 36, p),
+                backgroundColor: p > 0.5 ? `rgba(30,27,46,${lerp(0, 1, (p - 0.5) * 2)})` : 'transparent',
+                boxShadow: p > 0.5 ? `inset 0 0 0 1px rgba(234,179,8,${lerp(0, 0.4, (p - 0.5) * 2)})` : 'none',
+              }}
             >
               <Image
                 src="/royale-logo.png"
@@ -184,23 +199,30 @@ export default function LandingPage() {
                 width={44}
                 height={44}
                 priority
-                className={`object-contain transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] group-hover:scale-105 ${
-                  scrolled ? "w-7 h-7" : "w-10 h-10 lg:w-11 lg:h-11 drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
-                }`}
+                className="object-contain group-hover:scale-105 transition-transform"
+                style={{
+                  width: lerp(44, 28, p),
+                  height: lerp(44, 28, p),
+                  filter: p < 0.3 ? `drop-shadow(0 2px 8px rgba(0,0,0,${lerp(0.35, 0, p / 0.3)}))` : 'none',
+                }}
               />
             </span>
             <span className="leading-tight text-left">
               <span
-                className={`block font-bold tracking-[0.08em] transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
-                  scrolled ? "text-[12px] text-brand-800" : "text-[13px] lg:text-[15px] text-white"
-                }`}
+                className="block font-bold tracking-[0.08em]"
+                style={{
+                  fontSize: lerp(15, 12, p),
+                  color: scrolled ? '#1e293b' : 'white',
+                }}
               >
                 SPARTA ROYALE
               </span>
               <span
-                className={`block uppercase tracking-[0.22em] font-medium transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
-                  scrolled ? "text-[7px] text-gold-600" : "text-[8px] lg:text-[9px] text-gold-300/85"
-                }`}
+                className="block uppercase tracking-[0.22em] font-medium"
+                style={{
+                  fontSize: lerp(9, 7, p),
+                  color: scrolled ? '#b45309' : 'rgba(234,179,8,0.85)',
+                }}
               >
                 Nail &amp; Beauty Studio
               </span>
@@ -213,7 +235,7 @@ export default function LandingPage() {
               <li key={l.id}>
                 <button
                   onClick={() => goSection(l.id)}
-                  className={`px-3.5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
+                  className={`px-3.5 py-2 rounded-full text-[13px] font-medium tracking-wide ${
                     scrolled
                       ? "text-brand-900/65 hover:text-brand-800 hover:bg-brand-900/[0.06]"
                       : "text-white/80 hover:text-white hover:bg-white/10"
@@ -232,7 +254,7 @@ export default function LandingPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Instagram DM @${igHandle}`}
-              className={`grid place-items-center rounded-full transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] active:scale-95 ${
+              className={`grid place-items-center rounded-full active:scale-95 ${
                 scrolled
                   ? "w-9 h-9 text-brand-700 hover:text-white hover:bg-gradient-to-br hover:from-brand-600 hover:to-brand-800 border border-brand-900/10"
                   : "w-9 h-9 text-white/85 hover:text-white hover:bg-white/15 border border-white/20"
@@ -243,7 +265,7 @@ export default function LandingPage() {
 
             <button
               onClick={() => setLang((l) => (l === "sq" ? "en" : "sq"))}
-              className={`text-[10px] font-bold uppercase tracking-wider px-2.5 h-9 rounded-full border transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] active:scale-95 ${
+              className={`text-[10px] font-bold uppercase tracking-wider px-2.5 h-9 rounded-full border active:scale-95 ${
                 scrolled
                   ? "border-brand-900/10 text-brand-900/55 hover:text-brand-800 hover:bg-brand-900/[0.06]"
                   : "border-white/20 text-white/75 hover:text-white hover:bg-white/10"
@@ -254,7 +276,7 @@ export default function LandingPage() {
 
             <button
               onClick={() => goBooking()}
-              className={`hidden lg:inline-flex items-center gap-1.5 rounded-full font-semibold transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] active:scale-[0.97] ${
+              className={`hidden lg:inline-flex items-center gap-1.5 rounded-full font-semibold active:scale-[0.97] ${
                 scrolled
                   ? "h-9 px-4 text-[12px] bg-gradient-to-r from-brand-700 to-brand-600 text-white shadow-md shadow-brand-900/20 hover:shadow-lg"
                   : "h-10 px-5 text-[13px] bg-gradient-to-r from-gold-300 to-gold-400 text-brand-900 shadow-lg shadow-black/20 hover:from-gold-200 hover:to-gold-300"
@@ -266,7 +288,7 @@ export default function LandingPage() {
 
             <button
               onClick={() => setMenuOpen((o) => !o)}
-              className={`lg:hidden grid place-items-center w-9 h-9 rounded-full transition-all duration-700 ease-[cubic-bezier(0,0,0.2,1)] ${
+              className={`lg:hidden grid place-items-center w-9 h-9 rounded-full ${
                 scrolled ? "text-brand-800 hover:bg-brand-900/[0.06]" : "text-white hover:bg-white/10"
               }`}
               aria-label="Menu"
