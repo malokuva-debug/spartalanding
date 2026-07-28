@@ -78,10 +78,10 @@ async function seedSettings() {
 
   const booking = {
     slotInterval: 30,
-    leadMinutes: 60,
+    leadMinutes: 0,
     horizonDays: 30,
     instagram: "spartaroyale",
-    address: "Rr. Fehmi Agani, Nr. 15",
+    address: "Rr. Kacaniku, Nr. 17",
     city: "Prishtinë, Kosovë",
   };
 
