@@ -579,8 +579,6 @@ export default function LandingPage() {
                 <p className="text-white/45 text-[13px] leading-relaxed">{t[w.d]}</p>
               </div>
             ))}
-          </div>
-            ))}
           </div>        </div>
       </section>
 
