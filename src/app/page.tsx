@@ -119,12 +119,12 @@ export default function LandingPage() {
     ? [
         { icon: <MousePointerClick className="w-5 h-5" />, t: "Zgjidhni shërbimin", d: "Lista dhe çmimet vijnë direkt nga salloni, gjithmonë të përditësuara." },
         { icon: <CalendarCheck className="w-5 h-5" />, t: "Zgjidhni stafin dhe orën", d: "Shihni kush është i lirë dhe cilat orare janë realisht të disponueshme." },
-        { icon: <MessageCircle className="w-5 h-5" />, t: "Ju shkruajmë në Instagram", d: "Konfirmimi vjen në DM gjatë orarit të punës." },
+        { icon: <MessageCircle className="w-5 h-5" />, t: "Termini është i konfirmuar", d: "Në momentin që rezervohet Termini, Konfirmohet Termini" },
       ]
     : [
         { icon: <MousePointerClick className="w-5 h-5" />, t: "Pick your service", d: "The menu and prices come straight from the salon, always current." },
         { icon: <CalendarCheck className="w-5 h-5" />, t: "Choose staff and time", d: "See who's free and which times are genuinely available." },
-        { icon: <MessageCircle className="w-5 h-5" />, t: "We DM you on Instagram", d: "Confirmation lands in your DMs during opening hours." },
+        { icon: <MessageCircle className="w-5 h-5" />, t: "The Appointmnet is confirmed.", d: "The moment the appointment is booked, the appointment is confirmed." },
       ];
 
   const faqs = lang === "sq"
@@ -369,8 +369,8 @@ export default function LandingPage() {
 
             <div className="flex flex-wrap items-center gap-2.5">
               {(lang === "sq"
-                ? ["Shërbime nga sistemi", "Orar sipas stafit", "Konfirmim në Instagram"]
-                : ["Live service menu", "Staff-based schedule", "Instagram confirmation"]
+                ? ["Shërbime nga sistemi", "Orar sipas stafit", "Konfirmim të shpejtë"]
+                : ["Live service menu", "Staff-based schedule", "Fast confirmation"]
               ).map((label) => (
                 <span
                   key={label}
@@ -580,27 +580,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-4">
-            {(lang === "sq"
-              ? [
-                  { title: "Menu i lidhur me dashboard", text: "Çmimet dhe kohëzgjatjet nuk janë të shkruara me dorë në faqe." },
-                  { title: "Orar real i stafit", text: "Disponueshmëria llogaritet nga ditët dhe orët e punës në sistem." },
-                  { title: "Pa mbivendosje", text: "Takimet ekzistuese bllokojnë automatikisht oraret e zëna." },
-                ]
-              : [
-                  { title: "Dashboard-connected menu", text: "Prices and durations are not hardcoded on the page." },
-                  { title: "Real staff schedule", text: "Availability is calculated from working days and staff hours." },
-                  { title: "No overlaps", text: "Existing appointments automatically block occupied time slots." },
-                ]
-            ).map((item) => (
-              <div key={item.title} className="rounded-2xl bg-white/[0.04] border border-white/[0.07] p-6 backdrop-blur-sm">
-                <p className="text-gold-300 text-[10px] uppercase tracking-[0.2em] font-bold mb-3">
-                  Sparta Royale
-                </p>
-                <h3 className="text-white font-bold text-[15px] mb-2">{item.title}</h3>
-                <p className="text-white/45 text-[13px] leading-relaxed">{item.text}</p>
-              </div>
             ))}
           </div>        </div>
       </section>
@@ -619,8 +598,8 @@ export default function LandingPage() {
 
                 <ul className="space-y-2.5 mb-7">
                   {(lang === "sq"
-                    ? ["Konfirmim në Instagram", "Zgjidhni vetë specialisten", "Oraret e lira në kohë reale", "Pa pagesë paraprake"]
-                    : ["Instagram confirmation", "Choose your own specialist", "Live availability, no guessing", "No upfront payment"]
+                    ? ["Konfirmim të shpejtë", "Zgjidhni vetë specialisten", "Oraret e lira në kohë reale", "Pa pagesë paraprake"]
+                    : ["Fast confirmation", "Choose your own specialist", "Live availability, no guessing", "No upfront payment"]
                   ).map((p, i) => (
                     <li key={i} className="flex items-center gap-3 px-3.5 py-3 rounded-xl bg-white border border-slate-100 shadow-[0_2px_10px_-6px_rgba(71,17,21,0.12)]">
                       <span className="p-1 rounded-md bg-emerald-50 text-emerald-600 shrink-0"><CheckCircle2 className="w-3.5 h-3.5" /></span>
@@ -701,7 +680,7 @@ export default function LandingPage() {
             <div className="rounded-2xl bg-white p-6 border border-slate-100 shadow-[0_2px_12px_-6px_rgba(71,17,21,0.1)]">
               <span className="inline-flex w-10 h-10 rounded-xl bg-brand-50 text-brand-700 items-center justify-center mb-4"><MapPin className="w-5 h-5" /></span>
               <p className="text-[10px] uppercase tracking-[0.2em] font-bold mb-2.5 text-brand-400">{t.contact_address}</p>
-              <p className="font-semibold text-slate-800 text-sm">{cfg?.address ?? "Rr. Fehmi Agani, Nr. 15"}</p>
+              <p className="font-semibold text-slate-800 text-sm">{cfg?.address ?? "Rr. Kacaniku, Nr. 17"}</p>
               <p className="text-slate-400 text-xs mt-1">{cfg?.city ?? "Prishtinë, Kosovë"}</p>
             </div>
 
@@ -749,7 +728,7 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="bg-brand-950 text-white">
+      <footer className="bg-brand-950 text-white z-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="flex items-center gap-3">
@@ -771,15 +750,12 @@ export default function LandingPage() {
               <button onClick={() => goBooking()} className="text-gold-300 font-semibold hover:text-gold-200 transition-colors">
                 {t.nav_book}
               </button>
-              <a href={igDm} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white transition-colors">
-                <Instagram className="w-3.5 h-3.5 text-gold-400" />@{igHandle}
-              </a>
             </div>
           </div>
 
           <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[11px] text-white/20">
             <span>&copy; {new Date().getFullYear()} Sparta Royale</span>
-            <span>{cfg?.address ?? "Rr. Fehmi Agani, Nr. 15"} · {cfg?.city ?? "Prishtinë, Kosovë"}</span>
+            <span>{cfg?.address ?? "Rr. Kacaniku, Nr. 17"} · {cfg?.city ?? "Prishtinë, Kosovë"}</span>
           </div>
         </div>
       </footer>
