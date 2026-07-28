@@ -103,27 +103,37 @@ export async function POST(request: NextRequest) {
       console.error("[appointments] local mirror failed:", err);
     }
 
-    // Fire-and-forget: notify dashboard owners via push
+    // Notify dashboard owners via push
     try {
       const dashboardUrl = process.env.DASHBOARD_URL;
       const webhookSecret = process.env.WEBHOOK_SECRET;
       if (dashboardUrl && webhookSecret) {
-        fetch(`${dashboardUrl}/api/webhook/new-appointment`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${webhookSecret}`,
-          },
-          body: JSON.stringify({
-            clientName,
-            serviceName: result.service?.name || serviceId,
-            workerId: null,
-            date,
-            time,
-          }),
-        }).catch(() => {});
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+        try {
+          const resp = await fetch(`${dashboardUrl}/api/webhook/new-appointment`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${webhookSecret}`,
+            },
+            body: JSON.stringify({
+              clientName,
+              serviceName: result.service?.name || serviceId,
+              workerId: null,
+              date,
+              time,
+            }),
+            signal: controller.signal,
+          });
+          console.log(`[appointments] Webhook response: ${resp.status}`);
+        } finally {
+          clearTimeout(timeout);
+        }
       }
-    } catch {}
+    } catch (err) {
+      console.error('[appointments] Webhook push failed:', err);
+    }
 
     return NextResponse.json(
       {
