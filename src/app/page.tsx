@@ -46,21 +46,22 @@ const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 export default function LandingPage() {
   const [lang, setLang] = useState<Language>("sq");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [pastHero, setPastHero] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [pick, setPick] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [salon, setSalon] = useState<SalonData | null>(null);
   const [loadingSalon, setLoadingSalon] = useState(true);
   const bookingRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const sheenRef = useRef<HTMLSpanElement>(null);
+  const logoWrapRef = useRef<HTMLSpanElement>(null);
+  const logoImgRef = useRef<HTMLImageElement>(null);
+  const titleRef = useRef<HTMLSpanElement>(null);
+  const subtitleRef = useRef<HTMLSpanElement>(null);
 
   const t = translations[lang];
-
-  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-  const p = scrollProgress;
-  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
-  const navBaseH = isDesktop ? 80 : 64;
 
   useEffect(() => {
     let alive = true;
@@ -75,15 +76,74 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
+    let raf: number;
     const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 120);
-      setScrollProgress(Math.min(1, Math.max(0, (y - 20) / 160)));
-      setPastHero(y > window.innerHeight * 0.8);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const p = Math.min(1, Math.max(0, (y - 40) / 180));
+        const navH = window.innerWidth >= 1024 ? 80 : 64;
+
+        const header = headerRef.current;
+        const nav = navRef.current;
+        const sheen = sheenRef.current;
+        const logoWrap = logoWrapRef.current;
+        const logoImg = logoImgRef.current;
+        const title = titleRef.current;
+        const subtitle = subtitleRef.current;
+        if (!header || !nav) return;
+
+        header.style.top = `${p * 12}px`;
+        nav.style.height = `${navH - (navH - 56) * p}px`;
+        nav.style.paddingLeft = `${32 - 20 * p}px`;
+        nav.style.paddingRight = `${32 - 20 * p}px`;
+        nav.style.maxWidth = `${1280 - 200 * p}px`;
+        nav.style.borderRadius = `${p * 9999}px`;
+        nav.style.border = `1px solid rgba(255,255,255,${p * 0.5})`;
+        nav.style.backgroundColor = `rgba(255,255,255,${p * 0.65})`;
+        nav.style.boxShadow = `0 8px 32px -8px rgba(71,17,21,${p * 0.22}), inset 0 1px 0 0 rgba(255,255,255,${p * 0.7})`;
+        nav.style.backdropFilter = `blur(${p * 48}px) saturate(${100 + p * 50}%)`;
+
+        if (sheen) sheen.style.opacity = String(p);
+        if (logoWrap) {
+          const s = 44 - 8 * p;
+          logoWrap.style.width = `${s}px`;
+          logoWrap.style.height = `${s}px`;
+          if (p > 0.5) {
+            const t2 = (p - 0.5) * 2;
+            logoWrap.style.backgroundColor = `rgba(30,27,46,${t2})`;
+            logoWrap.style.boxShadow = `inset 0 0 0 1px rgba(234,179,8,${t2 * 0.4})`;
+          } else {
+            logoWrap.style.backgroundColor = 'transparent';
+            logoWrap.style.boxShadow = 'none';
+          }
+        }
+        if (logoImg) {
+          const s = 44 - 16 * p;
+          logoImg.style.width = `${s}px`;
+          logoImg.style.height = `${s}px`;
+          logoImg.style.filter = p < 0.3 ? `drop-shadow(0 2px 8px rgba(0,0,0,${0.35 * (1 - p / 0.3)}))` : 'none';
+        }
+        if (title) {
+          title.style.fontSize = `${15 - 3 * p}px`;
+          title.style.color = p > 0.5 ? '#1e293b' : 'white';
+        }
+        if (subtitle) {
+          subtitle.style.fontSize = `${9 - 2 * p}px`;
+          subtitle.style.color = p > 0.5 ? '#b45309' : 'rgba(234,179,8,0.85)';
+        }
+
+        setPastHero(y > window.innerHeight * 0.8);
+        const nowScrolled = y > 120;
+        setScrolled(prev => prev === nowScrolled ? prev : nowScrolled);
+      });
     };
-    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   useEffect(() => {
@@ -155,27 +215,30 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-slate-900 antialiased selection:bg-brand-100 selection:text-brand-800">
       {/* ═══════════ HEADER morphs into a floating glass pill ═══════════ */}
       <header
+        ref={headerRef}
         className="fixed z-50 left-0 right-0"
-        style={{ top: lerp(0, 12, p) }}
+        style={{ top: 0 }}
       >
         <nav
+          ref={navRef}
           className="relative flex items-center justify-between gap-3 mx-auto"
           style={{
-            height: lerp(navBaseH, 56, p),
-            paddingLeft: lerp(32, 12, p),
-            paddingRight: lerp(32, 12, p),
-            maxWidth: lerp(1280, 1080, p),
-            borderRadius: lerp(0, 9999, p),
-            border: `1px solid rgba(255,255,255,${lerp(0, 0.5, p)})`,
-            backgroundColor: `rgba(255,255,255,${lerp(0, 0.65, p)})`,
-            boxShadow: `0 8px 32px -8px rgba(71,17,21,${lerp(0, 0.22, p)}), inset 0 1px 0 0 rgba(255,255,255,${lerp(0, 0.7, p)})`,
-            backdropFilter: `blur(${lerp(0, 48, p)}px) saturate(${lerp(100, 150, p)}%)`,
+            height: 80,
+            paddingLeft: 32,
+            paddingRight: 32,
+            maxWidth: 1280,
+            borderRadius: 0,
+            border: '1px solid rgba(255,255,255,0)',
+            backgroundColor: 'rgba(255,255,255,0)',
+            boxShadow: '0 8px 32px -8px rgba(71,17,21,0), inset 0 1px 0 0 rgba(255,255,255,0)',
+            backdropFilter: 'blur(0px) saturate(100%)',
           }}
         >
           {/* gold sheen that only shows in pill state */}
           <span
+            ref={sheenRef}
             className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-r from-gold-200/25 via-transparent to-brand-200/20"
-            style={{ opacity: p }}
+            style={{ opacity: 0 }}
           />
 
           {/* Logo */}
@@ -185,15 +248,17 @@ export default function LandingPage() {
             aria-label="Sparta Royale"
           >
             <span
+              ref={logoWrapRef}
               className="relative grid place-items-center rounded-full"
               style={{
-                width: lerp(44, 36, p),
-                height: lerp(44, 36, p),
-                backgroundColor: p > 0.5 ? `rgba(30,27,46,${lerp(0, 1, (p - 0.5) * 2)})` : 'transparent',
-                boxShadow: p > 0.5 ? `inset 0 0 0 1px rgba(234,179,8,${lerp(0, 0.4, (p - 0.5) * 2)})` : 'none',
+                width: 44,
+                height: 44,
+                backgroundColor: 'transparent',
+                boxShadow: 'none',
               }}
             >
               <Image
+                ref={logoImgRef}
                 src="/royale-logo.png"
                 alt="Sparta Royale"
                 width={44}
@@ -201,28 +266,24 @@ export default function LandingPage() {
                 priority
                 className="object-contain group-hover:scale-105 transition-transform"
                 style={{
-                  width: lerp(44, 28, p),
-                  height: lerp(44, 28, p),
-                  filter: p < 0.3 ? `drop-shadow(0 2px 8px rgba(0,0,0,${lerp(0.35, 0, p / 0.3)}))` : 'none',
+                  width: 44,
+                  height: 44,
+                  filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))',
                 }}
               />
             </span>
             <span className="leading-tight text-left">
               <span
+                ref={titleRef}
                 className="block font-bold tracking-[0.08em]"
-                style={{
-                  fontSize: lerp(15, 12, p),
-                  color: scrolled ? '#1e293b' : 'white',
-                }}
+                style={{ fontSize: 15, color: 'white' }}
               >
                 SPARTA ROYALE
               </span>
               <span
+                ref={subtitleRef}
                 className="block uppercase tracking-[0.22em] font-medium"
-                style={{
-                  fontSize: lerp(9, 7, p),
-                  color: scrolled ? '#b45309' : 'rgba(234,179,8,0.85)',
-                }}
+                style={{ fontSize: 9, color: 'rgba(234,179,8,0.85)' }}
               >
                 Nail &amp; Beauty Studio
               </span>
