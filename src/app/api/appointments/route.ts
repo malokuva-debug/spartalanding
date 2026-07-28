@@ -83,8 +83,7 @@ export async function POST(request: NextRequest) {
 
     // Local audit mirror, never blocks the client response.
     try {
-      const { services } = await getSalonData();
-      const svc = services.find((s) => s.id === serviceId);
+      const svc = result.service;
       await db.insert(appointments).values({
         clientName,
         clientPhone: phone,
@@ -103,33 +102,25 @@ export async function POST(request: NextRequest) {
       console.error("[appointments] local mirror failed:", err);
     }
 
-    // Notify dashboard owners via push
+    // Notify dashboard owners via push — fire-and-forget, never blocks response
     try {
       const dashboardUrl = process.env.DASHBOARD_URL;
       const webhookSecret = process.env.WEBHOOK_SECRET;
       if (dashboardUrl && webhookSecret) {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
-        try {
-          const resp = await fetch(`${dashboardUrl}/api/webhook/new-appointment`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${webhookSecret}`,
-            },
-            body: JSON.stringify({
-              clientName,
-              serviceName: result.service?.name || serviceId,
-              workerId: null,
-              date,
-              time,
-            }),
-            signal: controller.signal,
-          });
-          console.log(`[appointments] Webhook response: ${resp.status}`);
-        } finally {
-          clearTimeout(timeout);
-        }
+        fetch(`${dashboardUrl}/api/webhook/new-appointment`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${webhookSecret}`,
+          },
+          body: JSON.stringify({
+            clientName,
+            serviceName: result.service?.name || serviceId,
+            workerId: null,
+            date,
+            time,
+          }),
+        }).catch(err => console.error('[appointments] Webhook push failed:', err));
       }
     } catch (err) {
       console.error('[appointments] Webhook push failed:', err);

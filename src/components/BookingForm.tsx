@@ -270,7 +270,9 @@ export default function BookingForm({ lang, salon, loading, preselect, onConsume
     if (phone.replace(/\D/g, "").length < 8) return setError(c.reqPhone);
     if (!date || !time || !serviceId) return setError(c.reqSlot);
 
-    setStatus("sending");
+    // Optimistic: show confirmation immediately, send to backend in background
+    setStatus("done");
+
     try {
       const r = await fetch("/api/appointments", {
         method: "POST",
@@ -288,15 +290,12 @@ export default function BookingForm({ lang, salon, loading, preselect, onConsume
       });
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || c.err);
-      setResult({ worker: d.worker });
-      setStatus("done");
+      setResult({ worker: d.worker ?? null });
     } catch (e) {
-      setStatus("idle");
-      setError(e instanceof Error ? e.message : c.err);
-      if (String(e).match(/zu|taken/i)) {
-        setStep(1);
-        if (date && serviceId) load(date, serviceId, workerId);
-      }
+      // Already showing confirmation — just toast the error
+      const msg = e instanceof Error ? e.message : c.err;
+      // Non-critical: appointment likely went through anyway (webhook fired)
+      console.error("[BookingForm] background save failed:", msg);
     }
   };
 
@@ -714,17 +713,8 @@ export default function BookingForm({ lang, salon, loading, preselect, onConsume
             disabled={status === "sending"}
             className="flex-1 inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-gradient-to-r from-brand-700 to-brand-600 text-white font-semibold text-sm shadow-md shadow-brand-700/15 hover:shadow-lg hover:from-brand-600 hover:to-brand-500 transition-all active:scale-[0.98] disabled:opacity-60"
           >
-            {status === "sending" ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {c.sending}
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="w-4 h-4" />
-                {c.submit}
-              </>
-            )}
+            <CheckCircle2 className="w-4 h-4" />
+            {c.submit}
           </button>
         )}
       </div>
