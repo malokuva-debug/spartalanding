@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { appointments } from "@/db/schema";
 import { createBooking, getSalonData } from "@/lib/turso";
+import { sendBookingPush } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
 
@@ -102,7 +103,11 @@ export async function POST(request: NextRequest) {
       console.error("[appointments] local mirror failed:", err);
     }
 
-    // Notify dashboard owners via push — fire-and-forget, never blocks response
+    // Send push notification directly — instant, no cross-server dependency
+    const svcName = result.service?.name || serviceId;
+    sendBookingPush(clientName, svcName, date, time).catch(() => {});
+
+    // Also fire dashboard webhook as fallback (fire-and-forget)
     try {
       const dashboardUrl = process.env.DASHBOARD_URL;
       const webhookSecret = process.env.WEBHOOK_SECRET;
@@ -115,15 +120,15 @@ export async function POST(request: NextRequest) {
           },
           body: JSON.stringify({
             clientName,
-            serviceName: result.service?.name || serviceId,
+            serviceName: svcName,
             workerId: null,
             date,
             time,
           }),
-        }).catch(err => console.error('[appointments] Webhook push failed:', err));
+        }).catch(err => console.error('[appointments] Dashboard webhook fallback failed:', err));
       }
     } catch (err) {
-      console.error('[appointments] Webhook push failed:', err);
+      console.error('[appointments] Dashboard webhook fallback error:', err);
     }
 
     return NextResponse.json(
